@@ -2,8 +2,9 @@
 
 import { UIMessage } from "ai";
 import { cn } from "@/lib/utils";
-import { User, Bot, Loader2 } from "lucide-react";
+import { User, Bot, Loader2 } from "lucide-react"; // Loader2 used in loading indicators below
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { ToolCallPart } from "./ToolCallPart";
 
 interface MessageListProps {
   messages: UIMessage[];
@@ -86,21 +87,13 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                           default:
                             if (part.type.startsWith("tool-")) {
                               const toolPart = part as any;
-                              const isDone = toolPart.state === "output-available";
                               return (
-                                <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs font-mono border border-neutral-200">
-                                  {isDone ? (
-                                    <>
-                                      <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                      <span className="text-neutral-700">{toolPart.toolName ?? part.type.replace("tool-", "")}</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
-                                      <span className="text-neutral-700">{toolPart.toolName ?? part.type.replace("tool-", "")}</span>
-                                    </>
-                                  )}
-                                </div>
+                                <ToolCallPart
+                                  key={partIndex}
+                                  toolName={toolPart.toolName ?? part.type.replace("tool-", "")}
+                                  state={toolPart.state}
+                                  input={toolPart.input}
+                                />
                               );
                             }
                             return null;
